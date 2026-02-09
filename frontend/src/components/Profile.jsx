@@ -16,6 +16,15 @@ const Profile = () => {
     const [open, setOpen] = useState(false);
     const { user } = useSelector(store => store.auth);
 
+    const getPhotoUrl = (photo) => {
+        if (!photo) return null;
+        const url = photo.url || photo;
+        if (typeof url !== 'string') return null;
+        if (url.startsWith('http')) return url;
+        const BACKEND_BASE_URL = "http://localhost:8001";
+        return `${BACKEND_BASE_URL}${url}`;
+    };
+
     const getResumeUrl = (resumePath) => {
         if (!resumePath) return null;
         // Convert Windows path to URL format and ensure it points to the correct API endpoint
@@ -30,7 +39,7 @@ const Profile = () => {
                 <div className='flex justify-between'>
                     <div className='flex items-center gap-4'>
                         <Avatar className="h-24 w-24">
-                            <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
+                            <AvatarImage src={getPhotoUrl(user?.profile?.profilePhoto)} alt="User Avatar" />
                             <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <div>
@@ -59,7 +68,7 @@ const Profile = () => {
                 {/* Resume Information */}
                 <div className='my-5 p-4 bg-gray-50 rounded-lg'>
                     <h2 className='font-semibold text-lg mb-3'>Resume Information</h2>
-                    
+
                     {/* Extracted Job Title */}
                     {user?.profile?.parsedResume?.jobTitle && (
                         <div className='flex items-center gap-3 my-2'>
@@ -67,7 +76,7 @@ const Profile = () => {
                             <span>Preferred Role: {user.profile.parsedResume.jobTitle}</span>
                         </div>
                     )}
-                    
+
                     {/* Extracted Location */}
                     {user?.profile?.parsedResume?.location && (
                         <div className='flex items-center gap-3 my-2'>
@@ -81,23 +90,23 @@ const Profile = () => {
                         <Label className="text-md font-semibold">Resume File</Label>
                         <div className='mt-2'>
                             {user?.profile?.resume ? (
-                                <a 
+                                <a
                                     href={getResumeUrl(user.profile.resume.path)}
-                                    target="_blank" 
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     className='text-blue-500 hover:underline cursor-pointer flex items-center gap-2 group'
                                 >
-                                    <svg 
-                                        className="w-5 h-5 text-blue-500 group-hover:text-blue-600" 
-                                        fill="none" 
-                                        stroke="currentColor" 
+                                    <svg
+                                        className="w-5 h-5 text-blue-500 group-hover:text-blue-600"
+                                        fill="none"
+                                        stroke="currentColor"
                                         viewBox="0 0 24 24"
                                     >
-                                        <path 
-                                            strokeLinecap="round" 
-                                            strokeLinejoin="round" 
-                                            strokeWidth={2} 
-                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" 
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
                                         />
                                     </svg>
                                     <span>{user.profile.resume.originalName}</span>
