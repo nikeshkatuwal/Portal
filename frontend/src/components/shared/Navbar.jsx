@@ -33,7 +33,7 @@ export const Navbar = () => {
     console.log("log out")
     try {
       console.log(USER_API_END_POINT); // Should display the correct API URL
-      
+    
       const res = await axios.get(`${USER_API_END_POINT}/logout`, { withCredentials: true });
 
 
@@ -131,6 +131,7 @@ export const Navbar = () => {
 
                 <PopoverTrigger asChild>
                   <Avatar className="cursor-pointer transition-transform hover:scale-105">
+                   
                     <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
                     <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
                  </Avatar>
@@ -141,6 +142,7 @@ export const Navbar = () => {
                     <Avatar>
                       <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
                       <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
+                      
                     </Avatar>
                     
                 
@@ -228,7 +230,8 @@ export const Navbar = () => {
             
               <PopoverTrigger asChild>
                 <Avatar className="mt-4 cursor-pointer transition-transform hover:scale-105">
-                  <AvatarImage src={user?.profile?.profilePhoto } alt="User Avatar" />
+                  <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
+                  <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
               
                 
