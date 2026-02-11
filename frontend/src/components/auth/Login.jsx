@@ -146,7 +146,8 @@ const Login = () => {
                 Signup
               </Link>
               </div>
-              <Button className="my-4">Forget Password</Button>
+              <button className="my-4">Forget Password</button>
+              
             </span>
             
           </form>

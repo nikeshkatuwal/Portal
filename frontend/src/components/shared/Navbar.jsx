@@ -41,7 +41,7 @@ export const Navbar = () => {
     console.log("log out")
     try {
       console.log(USER_API_END_POINT); // Should display the correct API URL
-
+    
       const res = await axios.get(`${USER_API_END_POINT}/logout`, { withCredentials: true });
 
 
@@ -139,18 +139,18 @@ export const Navbar = () => {
 
                 <PopoverTrigger asChild>
                   <Avatar className="cursor-pointer transition-transform hover:scale-105">
-                    <AvatarImage src={getPhotoUrl(user?.profile?.profilePhoto)} alt="User Avatar" />
+                   
+                    <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
                     <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
-
-                  </Avatar>
-
-                </PopoverTrigger>
+                 </Avatar>
+                 
+                </PopoverTrigger> 
                 <PopoverContent className="w-80">
                   <Link to='/profile' className="flex gap-2 space-y-2">
                     <Avatar>
-                      <AvatarImage src={getPhotoUrl(user?.profile?.profilePhoto)} alt="User Avatar" />
+                      <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
                       <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
-
+                      
                     </Avatar>
 
 
@@ -238,7 +238,8 @@ export const Navbar = () => {
 
               <PopoverTrigger asChild>
                 <Avatar className="mt-4 cursor-pointer transition-transform hover:scale-105">
-                  <AvatarImage src={getPhotoUrl(user?.profile?.profilePhoto)} alt="User Avatar" />
+                  <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
+                  <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
 
 
@@ -246,7 +247,7 @@ export const Navbar = () => {
               <PopoverContent className="w-full mt-2">
                 <Link to='/profile' className="flex gap-2 space-y-2">
                   <Avatar>
-                    <AvatarImage src={getPhotoUrl(user?.profile?.profilePhoto)} alt="User Avatar" />
+                    <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
                     <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
                   </Avatar>
 
