@@ -11,14 +11,14 @@ import { deleteFile } from "../middlewares/fileUpload.js";
 export const register = async (req, res) => {
     try {
         const { fullname, email, phoneNumber, password, role } = req.body;
-         
+
         if (!fullname || !email || !phoneNumber || !password || !role) {
             return res.status(400).json({
                 message: "Something is missing",
                 success: false
             });
         };
-        
+
         const file = req.file;
         const fileUri = getDataUri(file);
         const cloudResponse = await uploadToCloudinary(fileUri.content);
@@ -38,8 +38,11 @@ export const register = async (req, res) => {
             phoneNumber,
             password: hashedPassword,
             role,
-            profile:{
-                profilePhoto:cloudResponse.secure_url,
+            profile: {
+                profilePhoto: {
+                    url: cloudResponse.url,
+                    publicId: cloudResponse.publicId
+                }
             }
         });
 
@@ -55,7 +58,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password, role } = req.body;
-        
+
         if (!email || !password || !role) {
             return res.status(400).json({
                 message: "Something is missing",
@@ -162,10 +165,29 @@ export const updateProfile = async (req, res) => {
             user.profile.parsedResume.skills = [];
         }
 
-        // Update user-provided skills
+        // Handle user-provided skills
         if (skills) {
             user.profile.skills = skills.split(",").map(skill => skill.trim());
             console.log('Updated user-provided skills:', user.profile.skills);
+        }
+
+        // Handle profile photo upload
+        if (req.photoData) {
+            console.log('Processing profile photo upload...');
+            // Delete old photo if it was a local file
+            if (user.profile.profilePhoto?.publicId && user.profile.profilePhoto.publicId.startsWith('photo-')) {
+                // This is a bit tricky since we don't have the full path here easily if it's stored differently
+                // But following the pattern, we can try to delete it
+                const oldPhotoPath = path.join(process.cwd(), 'uploads', 'photos', user.profile.profilePhoto.publicId);
+                if (fs.existsSync(oldPhotoPath)) {
+                    fs.unlinkSync(oldPhotoPath);
+                }
+            }
+
+            user.profile.profilePhoto = {
+                url: `/api/v1/uploads/photos/${req.photoData.filename}`,
+                publicId: req.photoData.filename // Using filename as publicID for local files
+            };
         }
 
         // Handle resume upload if file exists
@@ -252,7 +274,7 @@ export const updateProfile = async (req, res) => {
             user: userData,
             success: true
         });
-        
+
     } catch (error) {
         console.error("Profile update error:", error);
         // Clean up uploaded file if there's an error

@@ -4,36 +4,48 @@ import fs from 'fs';
 
 // Create uploads directory if it doesn't exist
 const uploadDir = './uploads/resumes';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const photoDir = './uploads/photos';
+
+[uploadDir, photoDir].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+});
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, uploadDir);
+        if (file.fieldname === 'profilePhoto') {
+            cb(null, photoDir);
+        } else {
+            cb(null, uploadDir);
+        }
     },
     filename: function (req, file, cb) {
-        // Create unique filename with timestamp
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'resume-' + uniqueSuffix + path.extname(file.originalname));
+        const prefix = file.fieldname === 'profilePhoto' ? 'photo-' : 'resume-';
+        cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
     }
 });
 
 const fileFilter = (req, file, cb) => {
     try {
-        // Check if file exists
         if (!file) {
             cb(new Error('No file uploaded'), false);
             return;
         }
 
-        // Check mime type
-        if (file.mimetype !== 'application/pdf') {
-            cb(new Error('Only PDF files are allowed'), false);
-            return;
+        if (file.fieldname === 'profilePhoto') {
+            if (!file.mimetype.startsWith('image/')) {
+                cb(new Error('Only image files are allowed for profile photo'), false);
+                return;
+            }
+        } else if (file.fieldname === 'file') {
+            if (file.mimetype !== 'application/pdf') {
+                cb(new Error('Only PDF files are allowed for resume'), false);
+                return;
+            }
         }
 
-        // Accept the file
         cb(null, true);
     } catch (error) {
         cb(new Error('File validation failed: ' + error.message), false);
@@ -50,7 +62,10 @@ const upload = multer({
 });
 
 export const handleFileUpload = (req, res, next) => {
-    upload.single('file')(req, res, async (err) => {
+    upload.fields([
+        { name: 'file', maxCount: 1 },
+        { name: 'profilePhoto', maxCount: 1 }
+    ])(req, res, async (err) => {
         try {
             if (err instanceof multer.MulterError) {
                 if (err.code === 'LIMIT_FILE_SIZE') {
@@ -70,28 +85,27 @@ export const handleFileUpload = (req, res, next) => {
                 });
             }
 
-            // If no file is uploaded, just continue
-            if (!req.file) {
-                next();
-                return;
+            // Process resume file
+            if (req.files?.file?.[0]) {
+                const file = req.files.file[0];
+                req.fileData = {
+                    originalname: file.originalname,
+                    filename: file.filename,
+                    path: file.path,
+                    mimetype: file.mimetype
+                };
             }
 
-            // Log file details for debugging
-            console.log('File received:', {
-                originalname: req.file.originalname,
-                filename: req.file.filename,
-                path: req.file.path,
-                mimetype: req.file.mimetype,
-                size: req.file.size
-            });
-
-            // Prepare file data for the next middleware
-            req.fileData = {
-                originalname: req.file.originalname,
-                filename: req.file.filename,
-                path: req.file.path,
-                mimetype: req.file.mimetype
-            };
+            // Process profile photo
+            if (req.files?.profilePhoto?.[0]) {
+                const photo = req.files.profilePhoto[0];
+                req.photoData = {
+                    originalname: photo.originalname,
+                    filename: photo.filename,
+                    path: photo.path,
+                    mimetype: photo.mimetype
+                };
+            }
 
             next();
         } catch (error) {

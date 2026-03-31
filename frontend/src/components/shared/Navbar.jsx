@@ -26,8 +26,16 @@ export const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const BACKEND_BASE_URL = "http://localhost:8000";
-  const BASE_URL = "http://localhost:8000";
+  const BACKEND_BASE_URL = "http://localhost:8001";
+  const BASE_URL = "http://localhost:8001";
+
+  const getPhotoUrl = (photo) => {
+    if (!photo) return null;
+    const url = photo.url || photo;
+    if (typeof url !== 'string') return null;
+    if (url.startsWith('http')) return url;
+    return `${BACKEND_BASE_URL}${url}`;
+  };
 
   const logoutHandler = async () => {
     console.log("log out")
@@ -37,10 +45,10 @@ export const Navbar = () => {
       const res = await axios.get(`${USER_API_END_POINT}/logout`, { withCredentials: true });
 
 
-      
+
       if (res.data.success) {
         dispatch(setUser(null));
-        
+
         navigate('/');
         toast.success(res.data.message);
       }
@@ -84,27 +92,27 @@ export const Navbar = () => {
             {user && user.role === 'recruiter' ? (
               <>
                 <li className="">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/admin/companies">Companies</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/admin/companies">Companies</NavLink>
                 </li>
                 <li className="">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/admin/jobs">Jobs</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/admin/jobs">Jobs</NavLink>
                 </li>
               </>
             ) : (
               <>
                 <li className="">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/">Home</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/">Home</NavLink>
                 </li>
                 <li className="">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/jobs">Jobs</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/jobs">Jobs</NavLink>
                 </li>
                 <li className="">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/browse">Browse</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/browse">Browse</NavLink>
                 </li>
               </>
             )}
@@ -126,7 +134,7 @@ export const Navbar = () => {
                 </Link>
               </>
             ) : (
-              
+
               <Popover>
 
                 <PopoverTrigger asChild>
@@ -144,8 +152,8 @@ export const Navbar = () => {
                       <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
                       
                     </Avatar>
-                    
-                
+
+
                     <div>
                       <h4 className="font-medium">{user?.fullname}</h4>
                       <p className="text-sm text-gray-500">{user?.profile?.bio}</p>
@@ -187,27 +195,27 @@ export const Navbar = () => {
             {user && user.role === 'recruiter' ? (
               <>
                 <li className="">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/admin/companies">Companies</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/admin/companies">Companies</NavLink>
                 </li>
                 <li className="">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/admin/jobs">Jobs</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/admin/jobs">Jobs</NavLink>
                 </li>
               </>
             ) : (
               <>
                 <li className="">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/">Home</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/">Home</NavLink>
                 </li>
                 <li className="">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/jobs">Jobs</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/jobs">Jobs</NavLink>
                 </li>
                 <li className="hover:text-[#F83002] transition-colors">
-                  <NavLink className={({ isActive }) => 
-                            isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/browse">Browse</NavLink>
+                  <NavLink className={({ isActive }) =>
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-900 transition-colors"} to="/browse">Browse</NavLink>
                 </li>
               </>
             )}
@@ -227,14 +235,14 @@ export const Navbar = () => {
             </div>
           ) : (
             <Popover>
-            
+
               <PopoverTrigger asChild>
                 <Avatar className="mt-4 cursor-pointer transition-transform hover:scale-105">
                   <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
                   <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
-              
-                
+
+
               </PopoverTrigger>
               <PopoverContent className="w-full mt-2">
                 <Link to='/profile' className="flex gap-2 space-y-2">
@@ -242,7 +250,7 @@ export const Navbar = () => {
                     <AvatarImage src={user?.profile?.profilePhoto?.url || user?.profile?.profilePhoto } alt="User Avatar" />
                     <AvatarFallback>{user?.fullname?.charAt(0).toUpperCase()}</AvatarFallback>
                   </Avatar>
-                  
+
                   <div>
                     <h4 className="font-medium">{user?.fullname}</h4>
                     <p className="text-sm text-gray-500">{user?.profile?.bio}</p>
